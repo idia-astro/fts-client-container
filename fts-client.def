@@ -1,7 +1,10 @@
 Bootstrap: debootstrap
 MirrorURL: http://ftp.leg.uct.ac.za/ubuntu/
-OSVersion: xenial
+OSVersion: bionic
 Include: software-properties-common
+
+%environment
+	export REQUESTS_CA_BUNDLE=/etc/grid-security/certificates
 
 %setup
 	cp globus-simple-ca-13e449bb_0.0_all.deb $SINGULARITY_ROOTFS
@@ -12,9 +15,8 @@ Include: software-properties-common
 	apt-add-repository multiverse
 	add-apt-repository restricted
 	apt update
-        apt install -y globus-proxy-utils globus-gsi-cert-utils-progs igtf-policy-classic python-pip python-m2crypto git python-dev libssl-dev libffi-dev libgnutls-dev libcurl4-gnutls-dev
+        apt install -y globus-proxy-utils globus-gsi-cert-utils-progs igtf-policy-classic python-pip python-m2crypto git python-dev libssl-dev libffi-dev libcurl4-gnutls-dev
 	dpkg -i /globus-simple-ca-13e449bb_0.0_all.deb && rm -f /globus-simple-ca-13e449bb_0.0_all.deb
 	grid-default-ca -ca 13e449bb
-        #pip install --upgrade pip
 	pip install git+https://gitlab.cern.ch/fts/fts-rest
 
