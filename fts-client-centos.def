@@ -1,0 +1,23 @@
+BootStrap: yum
+OSVersion: 7
+MirrorURL: http://mirror.centos.org/centos-%{OSVERSION}/%{OSVERSION}/os/$basearch/
+Include: yum
+UpdateURL: http://mirror.centos.org/centos-%{OSVERSION}/%{OSVERSION}/updates/$basearch/
+
+%setup
+	cp globus-simple-ca-13e449bb-1.0-1.el7.noarch.rpm $SINGULARITY_ROOTFS
+
+%post
+	yum install -y epel-release
+	# UMD signing keys not delivered via SSH
+	yum install -y https://repository.egi.eu/sw/production/umd/4/centos7/x86_64/updates/umd-release-4.1.3-1.el7.centos.noarch.rpm
+	yum install -y fts-rest-cli globus-proxy-utils voms-clients-cpp globus-gsi-cert-utils-progs ca_policy_igtf-classic openssh-clients
+	yum install -y /globus-simple-ca-13e449bb-1.0-1.el7.noarch.rpm && rm -f /globus-simple-ca-13e449bb-1.0-1.el7.noarch.rpm
+	
+	# Fix for missing dependencies for fts-rest-cli
+	yum install -y python-setuptools # for pkg_resources
+	yum install -y python2-pip
+	pip install certifi # another missing module but one I couldn't find a package for
+
+	grid-default-ca -ca 13e449bb
+
